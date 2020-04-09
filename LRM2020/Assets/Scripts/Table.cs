@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class Table : MonoBehaviour
 {
-    public int customers = 0;
-    public bool occupied = false;
+    private int customers = 0;
+    private bool occupied = false;
+    public int tableNumber;
+
+    public int Customers { get => customers; set => customers = value; }
+    public bool Occupied { get => occupied; set => occupied = value; }
+
     // Start is called before the first frame update
     void Start()
     {

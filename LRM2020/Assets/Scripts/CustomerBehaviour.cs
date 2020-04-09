@@ -2,16 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 public class CustomerBehaviour : MonoBehaviour
 {
     NavMeshAgent agent;
     Animator anim;
-    Transform destination;    
-    public float speed = 10.0f;
-    public float rotSpeed = 10.0f;
-    public float accuracy = 2.0f;
-    GameObject[] tables;
+
+    [SerializeField]
+    private float speed = 10.0f;
+    public float Speed { get => speed; set => speed = value; }
+
+    [SerializeField]
+    private float rotSpeed = 10.0f;
+    public float RotSpeed { get => rotSpeed; set => rotSpeed = value; }
+
+    [SerializeField]
+    private float accuracy = 10.0f;
+    public float Accuracy { get => accuracy; set => accuracy = value; }
+
+   
+    List<Table> tables;
     public enum State{
         Searching, Waiting, Eating, Leaving
     };
@@ -20,7 +31,8 @@ public class CustomerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        tables = GameObject.FindGameObjectsWithTag("Table");
+        
+        tables = UnityEngine.Object.FindObjectsOfType<Table>().ToList();
         agent = this.GetComponent<NavMeshAgent>();
         anim = this.GetComponent<Animator>();
         currentState = State.Searching;
@@ -49,51 +61,42 @@ public class CustomerBehaviour : MonoBehaviour
 
         }
     }
+    Table tableDestination;
+
+    
 
     void Search()
     {
-        if(destination == null)
-        {
-            ChooseDest();
-            return;
-        }
-
-        agent.SetDestination(destination.position);
-
-        Table tableControl = destination.gameObject.GetComponent<Table>();
-
-        if(!tableControl.occupied)
-        {
-            if(Vector3.Distance(this.transform.position, destination.position) <= accuracy)
-            {
-            tableControl.customers++;
-            if(tableControl.customers >= 2) tableControl.occupied = true;
-            currentState = State.Waiting;
-            }
-        }
-        else
-        {
-            ChooseDest();
+        tableDestination = ChooseDest();
+        if (tableDestination != null)
+        {                     
+            agent.SetDestination(tableDestination.transform.position);
+            if (Vector3.Distance(this.transform.position, tableDestination.transform.position) <= Accuracy)
+            {                             
+                tableDestination.Customers++;                
+                if (tableDestination.Customers >= 2)
+                {
+                    tableDestination.Occupied = true;                    
+                }
+                currentState = State.Waiting;
+            }            
         }
     }
 
-    void ChooseDest()
+    Table ChooseDest()
     {
-        
+        Table selectedTable = null;    
         float dist = 200.0f;
 
-        foreach (GameObject table in tables)
+        foreach (Table table in tables.Where(a => a.Occupied == false).ToList())
         {
-            if(table.GetComponent<Table>().occupied == false)
+            if(Vector3.Distance(this.transform.position, table.transform.position) < dist)                    
             {
-                if(Vector3.Distance(this.transform.position, table.transform.position) < dist)                    
-                {
                 dist = Vector3.Distance(transform.position, table.transform.position);
-                destination = table.transform;
-                Debug.Log(dist);
-                }
-            }else{return;}
+                selectedTable = table;            
+            }
         }
+        return selectedTable;
     }
 
     void Wait()
