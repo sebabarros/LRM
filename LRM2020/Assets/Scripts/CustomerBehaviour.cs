@@ -21,7 +21,7 @@ public class CustomerBehaviour : MonoBehaviour
     private float accuracy = 10.0f;
     public float Accuracy { get => accuracy; set => accuracy = value; }
 
-   
+    private Table SelectedTable;
     List<Table> tables;
     public enum State{
         Searching, Waiting, Eating, Leaving
@@ -74,10 +74,14 @@ public class CustomerBehaviour : MonoBehaviour
             if (Vector3.Distance(this.transform.position, tableDestination.transform.position) <= Accuracy)
             {                             
                 tableDestination.Customers++;                
+                tableDestination.SittingCustomers.Add(this);
+                
                 if (tableDestination.Customers >= 2)
                 {
                     tableDestination.Occupied = true;                    
                 }
+                
+                SelectedTable = tableDestination;
                 currentState = State.Waiting;
             }            
         }
