@@ -61,27 +61,19 @@ public class CustomerBehaviour : MonoBehaviour
 
         }
     }
-    Table tableDestination;
+    
 
     
 
     void Search()
     {
-        tableDestination = ChooseDest();
+        Table tableDestination = ChooseDest();
         if (tableDestination != null)
         {                     
             agent.SetDestination(tableDestination.transform.position);
             if (Vector3.Distance(this.transform.position, tableDestination.transform.position) <= Accuracy)
-            {                             
-                tableDestination.Customers++;                
-                tableDestination.SittingCustomers.Add(this);
-                
-                if (tableDestination.Customers >= 2)
-                {
-                    tableDestination.Occupied = true;                    
-                }
-                
-                SelectedTable = tableDestination;
+            {
+                tableDestination.AddCostumerToTable(this);                            
                 currentState = State.Waiting;
             }            
         }
