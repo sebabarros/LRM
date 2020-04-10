@@ -84,7 +84,7 @@ public class CustomerBehaviour : MonoBehaviour
         Table selectedTable = null;    
         float dist = 200.0f;
 
-        foreach (Table table in tables.Where(a => a.Occupied == false).ToList())
+        foreach (Table table in tables.Where(a => a.StateOfTable == Table.TableState.free).ToList())
         {
             if(Vector3.Distance(this.transform.position, table.transform.position) < dist)                    
             {

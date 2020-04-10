@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class Table : MonoBehaviour
 {
+    public int TableNumber { get => tableNumber; set => tableNumber = value; }
+
+    public enum TableState
+    {
+        free, parcial , ocupadided
+    };
+
+
+    private TableState stateOfTable;
+   
+    public TableState StateOfTable { get => stateOfTable; set => stateOfTable = value; }
+
     [SerializeField]
     private int maxNumberOfCustomers;
     public int MaxNumberOfCustomers { get => maxNumberOfCustomers; set => maxNumberOfCustomers = value; }
@@ -24,27 +36,31 @@ public class Table : MonoBehaviour
     {
         Customers++;
         SittingCustomers.Add(customer);
-        if (Customers >= maxNumberOfCustomers)
+        if (Customers > maxNumberOfCustomers && Customers < maxNumberOfCustomers)
         {
-            Occupied = true;
+            StateOfTable = TableState.parcial;
+        }
+        else if (Customers >= maxNumberOfCustomers)
+        {
+            StateOfTable = TableState.ocupadided;
         }
     }
 
     public Table()
     {
         SittingCustomers = new List<CustomerBehaviour>();
-        
+      
     }
 
-    public int TableNumber { get => tableNumber; set => tableNumber = value; }
-    
+
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-        maxNumberOfCustomers = 1;
+        maxNumberOfCustomers = 2;
+        StateOfTable = TableState.free;
     }
 
     // Update is called once per frame
